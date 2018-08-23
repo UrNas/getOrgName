@@ -83,20 +83,20 @@ func getFullHost() []host {
 }
 func getOrgName(ips []string) []map[string]string {
 	var orgnames []map[string]string
-	for _, hostIp := range ips {
+	for _, hostIP := range ips {
 		conn, err := net.Dial("tcp", "whois.arin.net:43")
 		if err != nil {
-			log.Println("could not connect to whois: ", err)
+			log.Fatalln("could not connect to whois: ", err)
 		}
-		if _, err := conn.Write([]byte(hostIp + "\r\n")); err != nil {
-			log.Printf("could not write for this ip %s\n", hostIp)
+		if _, err := conn.Write([]byte(hostIP + "\r\n")); err != nil {
+			log.Printf("could not write for this ip %s\n", hostIP)
 		}
 		s := bufio.NewScanner(conn)
 		for s.Scan() {
 			data := s.Text()
 			if strings.Contains(data, "OrgName:") {
 				org := strings.Trim(strings.Split(data, " ")[8], ",!")
-				orgnames = append(orgnames, map[string]string{org: hostIp})
+				orgnames = append(orgnames, map[string]string{org: hostIP})
 			}
 		}
 	}
